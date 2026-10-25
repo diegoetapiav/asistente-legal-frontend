@@ -10,7 +10,7 @@
       --primary-dark: #1d4ed8;
       --bg: #f8fafc;
       --card: #ffffff;
-      --border: #cbd5e1;
+      --border: #e2e8f0;
       --text: #0f172a;
       --text-muted: #64748b;
       --success: #16a34a;
@@ -19,35 +19,56 @@
     }
     * { box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 0;
       padding: 16px;
       background-color: var(--bg);
       color: var(--text);
       font-size: 14px;
-      -webkit-tap-highlight-color: transparent;
     }
     .container {
-      max-width: 650px;
+      max-width: 900px;
       margin: 0 auto;
     }
     header {
-      margin-bottom: 20px;
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
     }
-    h1 {
-      font-size: 20px;
-      margin: 0 0 4px 0;
-      color: var(--text);
-    }
+    h1 { font-size: 18px; margin: 0; }
     .badge {
-      display: inline-block;
-      font-size: 11px;
+      font-size: 12px;
       background: #e2e8f0;
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 999px;
       color: var(--text-muted);
-      font-weight: 500;
+      font-weight: 600;
+    }
+    /* Pestañas */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
     }
     .card {
       background: var(--card);
@@ -57,44 +78,34 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
       margin-bottom: 16px;
     }
-    label {
-      font-weight: 600;
-      margin-top: 12px;
-      display: block;
-      font-size: 12px;
-    }
+    label { font-weight: 600; margin-top: 10px; display: block; font-size: 12px; }
     textarea, input[type="text"], select {
       width: 100%;
-      padding: 11px;
+      padding: 10px;
       margin-top: 5px;
-      border: 1px solid var(--border);
+      border: 1px solid #cbd5e1;
       border-radius: 6px;
       font-size: 14px;
       font-family: inherit;
       outline: none;
-      background: #fff;
     }
     textarea:focus, input[type="text"]:focus, select:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
     }
     .btn {
       background-color: var(--primary);
       color: white;
       border: none;
-      padding: 14px;
+      padding: 12px;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
       width: 100%;
-      font-size: 15px;
-      display: block;
-      margin-top: 14px;
-      touch-action: manipulation;
+      font-size: 14px;
+      margin-top: 12px;
     }
     .btn:active { background-color: var(--primary-dark); }
     .btn-save { background-color: var(--success); }
-    .btn-save:active { background-color: #15803d; }
     .btn-swap {
       background-color: #64748b;
       color: white;
@@ -105,17 +116,11 @@
       cursor: pointer;
       float: right;
     }
-    .spinner {
-      display: none;
-      text-align: center;
-      margin: 40px 0;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
+    .spinner { display: none; text-align: center; margin: 30px 0; color: var(--text-muted); }
     .match-card {
       border: 1px solid var(--warning-border);
       background-color: var(--warning-bg);
-      padding: 12px;
+      padding: 10px;
       border-radius: 6px;
       margin-bottom: 8px;
       cursor: pointer;
@@ -126,94 +131,224 @@
       border: 1px solid var(--primary); border-top: none; border-radius: 0 0 6px 6px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 99; display: none;
     }
-    .combo-item { padding: 9px 12px; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
-    .combo-item:hover, .combo-item:active { background-color: #eff6ff; color: var(--primary); }
+    .combo-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+    .combo-item:hover { background-color: #eff6ff; color: var(--primary); }
     .clearfix::after { content: ""; clear: both; display: table; }
+
+    /* ESTILOS DE LA TABLA DE EXPEDIENTES */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    tr:hover { background-color: #f8fafc; }
+    .tag-materia {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #e0f2fe;
+      color: #0369a1;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
 
   <div class="container">
     <header>
-      <h1>Gestión Judicial con IA</h1>
-      <span class="badge" id="estudioBadge">Despacho: Actiolegis S.A.</span>
+      <h1>⚖️ Asistente Judicial IA</h1>
+      <span class="badge" id="estudioBadge">Actiolegis S.A.</span>
     </header>
 
-    <!-- PANTALLA 1: INGRESO -->
-    <div id="step1">
-      <div class="card">
-        <label style="margin-top:0;">Texto de la providencia judicial:</label>
-        <textarea id="textoNotificacion" style="height: 150px;" placeholder="Pega el extracto de la providencia aquí..."></textarea>
-        <button type="button" class="btn" onclick="procesarProvidencia()" ontouchstart="">⚡ Analizar con IA</button>
+    <!-- NAVEGACIÓN POR PESTAÑAS -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tabProcesarBtn" onclick="cambiarPestana('procesar')">⚡ Cargar Providencia</button>
+      <button class="tab-btn" id="tabTablaBtn" onclick="cambiarPestana('tabla')">📁 Mis Expedientes</button>
+    </div>
+
+    <!-- SECCIÓN 1: PROCESAR CON IA -->
+    <div id="seccionProcesar">
+      <div id="step1">
+        <div class="card">
+          <label style="margin-top:0;">Texto de la providencia judicial:</label>
+          <textarea id="textoNotificacion" style="height: 140px;" placeholder="Pega el extracto de la providencia aquí..."></textarea>
+          <button type="button" class="btn" onclick="procesarProvidencia()">⚡ Analizar con IA</button>
+        </div>
+      </div>
+
+      <div id="loading" class="spinner">
+        <div style="font-size: 26px; margin-bottom: 6px;">⏳</div>
+        Analizando con Gemini y consultando expedientes...
+      </div>
+
+      <div id="step2" style="display:none;">
+        <div id="seccionCoincidencias" class="card" style="display:none; border-color: var(--warning-border); background-color: var(--warning-bg);">
+          <label style="color: #b45309; margin-top:0;">⚠️ Se detectó este proceso existente:</label>
+          <div id="listaCoincidencias" style="margin-top: 6px;"></div>
+        </div>
+
+        <div class="card">
+          <label style="margin-top:0;">Materia / Hoja:</label>
+          <select id="materia">
+            <option value="ACTIVOS CIVIL">ACTIVOS CIVIL</option>
+            <option value="ACTIVOS PENAL">ACTIVOS PENAL</option>
+            <option value="I. PENALES">I. PENALES</option>
+            <option value="TRÁMITES">TRÁMITES</option>
+          </select>
+
+          <div class="clearfix" style="margin-top: 8px;">
+            <label style="float: left; margin-top: 4px;">Cliente (Actor):</label>
+            <button type="button" class="btn-swap" onclick="invertirPartes()">⇄ Invertir</button>
+          </div>
+          <div class="combo-wrapper">
+            <input type="text" id="cliente" autocomplete="off">
+            <div id="dropdown_cliente" class="combo-dropdown"></div>
+          </div>
+
+          <label>Contraparte (Demandado / Investigado):</label>
+          <div class="combo-wrapper">
+            <input type="text" id="contraparte" autocomplete="off">
+            <div id="dropdown_contraparte" class="combo-dropdown"></div>
+          </div>
+
+          <label>Número de Proceso:</label>
+          <input type="text" id="numProceso">
+
+          <label>Tipo de Proceso:</label>
+          <input type="text" id="tipoProceso">
+
+          <label>Estado Actual:</label>
+          <textarea id="estado" style="height: 60px;"></textarea>
+
+          <label>Próximas Acciones:</label>
+          <textarea id="proximasAcciones" style="height: 60px;"></textarea>
+
+          <label>Responsable:</label>
+          <select id="responsable"></select>
+        </div>
+
+        <button type="button" class="btn btn-save" onclick="guardarRegistro()">💾 Guardar Expediente</button>
+        <button type="button" class="btn" style="background:#64748b; margin-top: 8px;" onclick="cancelar()">Cancelar</button>
       </div>
     </div>
 
-    <!-- CARGANDO -->
-    <div id="loading" class="spinner">
-      <div style="font-size: 28px; margin-bottom: 8px;">⏳</div>
-      Procesando providencia y consultando base de datos...
-    </div>
-
-    <!-- PANTALLA 2: CONFIRMACIÓN Y EDICIÓN -->
-    <div id="step2" style="display:none;">
-      
-      <div id="seccionCoincidencias" class="card" style="display:none; border-color: var(--warning-border); background-color: var(--warning-bg);">
-        <label style="color: #b45309; margin-top:0;">⚠️ Se detectó este proceso en la base de datos:</label>
-        <div id="listaCoincidencias" style="margin-top: 8px;"></div>
+    <!-- SECCIÓN 2: TABLERO VISUAL DE EXPEDIENTES (Para el usuario final) -->
+    <div id="seccionTabla" style="display: none;">
+      <div class="card" style="padding: 12px; margin-bottom: 12px;">
+        <input type="text" id="buscadorTabla" placeholder="🔍 Buscar por cliente, contraparte o número de juicio..." oninput="filtrarTabla()">
       </div>
 
-      <div class="card">
-        <label style="margin-top:0;">Materia / Hoja:</label>
-        <select id="materia">
-          <option value="ACTIVOS CIVIL">ACTIVOS CIVIL</option>
-          <option value="ACTIVOS PENAL">ACTIVOS PENAL</option>
-          <option value="I. PENALES">I. PENALES</option>
-          <option value="TRÁMITES">TRÁMITES</option>
-        </select>
-
-        <div class="clearfix" style="margin-top: 10px;">
-          <label style="float: left; margin-top: 4px;">Cliente (Actor):</label>
-          <button type="button" class="btn-swap" onclick="invertirPartes()">⇄ Invertir</button>
-        </div>
-        <div class="combo-wrapper">
-          <input type="text" id="cliente" autocomplete="off" placeholder="Nombre del cliente...">
-          <div id="dropdown_cliente" class="combo-dropdown"></div>
-        </div>
-
-        <label style="margin-top: 10px;">Contraparte (Demandado / Investigado):</label>
-        <div class="combo-wrapper">
-          <input type="text" id="contraparte" autocomplete="off" placeholder="Nombre de contraparte...">
-          <div id="dropdown_contraparte" class="combo-dropdown"></div>
-        </div>
-
-        <label>Número de Proceso:</label>
-        <input type="text" id="numProceso">
-
-        <label>Tipo de Proceso:</label>
-        <input type="text" id="tipoProceso">
-
-        <label>Estado Actual:</label>
-        <textarea id="estado" style="height: 70px;"></textarea>
-
-        <label>Próximas Acciones:</label>
-        <textarea id="proximasAcciones" style="height: 70px;"></textarea>
-
-        <label>Responsable a cargo:</label>
-        <select id="responsable"></select>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Materia</th>
+              <th>Nº Proceso</th>
+              <th>Partes (Cliente vs Contraparte)</th>
+              <th>Estado Actual</th>
+              <th>Próximas Acciones</th>
+              <th>Responsable</th>
+            </tr>
+          </thead>
+          <tbody id="cuerpoTablaExpedientes">
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">Cargando procesos...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-
-      <button type="button" class="btn btn-save" onclick="guardarRegistro()" ontouchstart="">💾 Guardar Expediente</button>
-      <button type="button" class="btn" style="background:#64748b; margin-top: 8px;" onclick="cancelar()">Cancelar</button>
     </div>
+
   </div>
 
   <script>
-    // Configuración comercial
     const API_URL = "https://asistente-legal-backend-237k.onrender.com";
-    const ORG_ID = "b47a988d-7123-455b-bfbf-6677942e1234"; // UUID creado en Supabase
+    const ORG_ID = "b47a988d-7123-455b-bfbf-6677942e1234";
 
+    let todosLosExpedientes = [];
     let bancoPartes = [];
     let expedienteIdExistente = null;
+
+    function cambiarPestana(pestana) {
+      if (pestana === 'procesar') {
+        document.getElementById('tabProcesarBtn').classList.add('active');
+        document.getElementById('tabTablaBtn').classList.remove('active');
+        document.getElementById('seccionProcesar').style.display = 'block';
+        document.getElementById('seccionTabla').style.display = 'none';
+      } else {
+        document.getElementById('tabTablaBtn').classList.add('active');
+        document.getElementById('tabProcesarBtn').classList.remove('active');
+        document.getElementById('seccionProcesar').style.display = 'none';
+        document.getElementById('seccionTabla').style.display = 'block';
+        cargarExpedientes();
+      }
+    }
+
+    async function cargarExpedientes() {
+      const tbody = document.getElementById('cuerpoTablaExpedientes');
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Cargando procesos desde la nube...</td></tr>';
+
+      try {
+        const resp = await fetch(`${API_URL}/api/listar-expedientes?organizacionId=${ORG_ID}`);
+        const data = await resp.json();
+        if (data.error) throw new Error(data.error);
+
+        todosLosExpedientes = data.expedientes || [];
+        renderizarTabla(todosLosExpedientes);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:20px;">Error al cargar: ${err.message}</td></tr>`;
+      }
+    }
+
+    function renderizarTabla(lista) {
+      const tbody = document.getElementById('cuerpoTablaExpedientes');
+      if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#64748b;">No hay expedientes registrados aún.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = lista.map(exp => `
+        <tr>
+          <td><span class="tag-materia">${exp.materia || 'CIVIL'}</span></td>
+          <td><strong>${exp.num_proceso || '-'}</strong><br><small style="color:#64748b;">${exp.tipo_proceso || ''}</small></td>
+          <td><strong>${exp.cliente || '-'}</strong><br><small style="color:#64748b;">vs. ${exp.contraparte || '-'}</small></td>
+          <td style="max-width: 250px;">${exp.estado_actual || '-'}</td>
+          <td style="max-width: 250px;">${exp.proximas_acciones || '-'}</td>
+          <td><small>${exp.responsable?.nombre_completo || 'Sin asignar'}</small></td>
+        </tr>
+      `).join('');
+    }
+
+    function filtrarTabla() {
+      const texto = document.getElementById('buscadorTabla').value.toLowerCase().trim();
+      const filtrados = todosLosExpedientes.filter(exp => {
+        return (exp.cliente && exp.cliente.toLowerCase().includes(texto)) ||
+               (exp.contraparte && exp.contraparte.toLowerCase().includes(texto)) ||
+               (exp.num_proceso && exp.num_proceso.toLowerCase().includes(texto)) ||
+               (exp.materia && exp.materia.toLowerCase().includes(texto));
+      });
+      renderizarTabla(filtrados);
+    }
 
     async function procesarProvidencia() {
       if (document.activeElement) document.activeElement.blur();
@@ -254,12 +389,10 @@
       document.getElementById('estado').value = d.estado || "";
       document.getElementById('proximasAcciones').value = d.proximasAcciones || "";
 
-      // Listas de partes
       bancoPartes = data.listas?.partes || [];
       iniciarCombo('cliente', 'dropdown_cliente', bancoPartes);
       iniciarCombo('contraparte', 'dropdown_contraparte', bancoPartes);
 
-      // Cargar responsables
       const selectResp = document.getElementById('responsable');
       selectResp.innerHTML = '';
       (data.listas?.responsables || []).forEach(r => {
@@ -269,7 +402,6 @@
         selectResp.appendChild(opt);
       });
 
-      // Manejo de coincidencias
       const divCoincidencias = document.getElementById('seccionCoincidencias');
       const lista = document.getElementById('listaCoincidencias');
       lista.innerHTML = '';
@@ -360,6 +492,7 @@
 
         alert(data.mensaje || "Guardado exitosamente.");
         cancelar();
+        cambiarPestana('tabla'); // Te lleva directo a ver la tabla con el nuevo expediente
       } catch (err) {
         alert("Error al guardar: " + err.message);
       }
