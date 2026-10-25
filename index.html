@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Asistente Legal SaaS</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --warning-bg: #fffbeb;
+      --warning-border: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background-color: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 4px 0;
+      color: var(--text);
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      background: #e2e8f0;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      margin-bottom: 16px;
+    }
+    label {
+      font-weight: 600;
+      margin-top: 12px;
+      display: block;
+      font-size: 12px;
+    }
+    textarea, input[type="text"], select {
+      width: 100%;
+      padding: 11px;
+      margin-top: 5px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      background: #fff;
+    }
+    textarea:focus, input[type="text"]:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      font-size: 15px;
+      display: block;
+      margin-top: 14px;
+      touch-action: manipulation;
+    }
+    .btn:active { background-color: var(--primary-dark); }
+    .btn-save { background-color: var(--success); }
+    .btn-save:active { background-color: #15803d; }
+    .btn-swap {
+      background-color: #64748b;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      float: right;
+    }
+    .spinner {
+      display: none;
+      text-align: center;
+      margin: 40px 0;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .match-card {
+      border: 1px solid var(--warning-border);
+      background-color: var(--warning-bg);
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .combo-wrapper { position: relative; }
+    .combo-dropdown {
+      position: absolute; width: 100%; max-height: 150px; overflow-y: auto; background: #ffffff;
+      border: 1px solid var(--primary); border-top: none; border-radius: 0 0 6px 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 99; display: none;
+    }
+    .combo-item { padding: 9px 12px; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+    .combo-item:hover, .combo-item:active { background-color: #eff6ff; color: var(--primary); }
+    .clearfix::after { content: ""; clear: both; display: table; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Gestión Judicial con IA</h1>
+      <span class="badge" id="estudioBadge">Despacho: Actiolegis S.A.</span>
+    </header>
+
+    <!-- PANTALLA 1: INGRESO -->
+    <div id="step1">
+      <div class="card">
+        <label style="margin-top:0;">Texto de la providencia judicial:</label>
+        <textarea id="textoNotificacion" style="height: 150px;" placeholder="Pega el extracto de la providencia aquí..."></textarea>
+        <button type="button" class="btn" onclick="procesarProvidencia()" ontouchstart="">⚡ Analizar con IA</button>
+      </div>
+    </div>
+
+    <!-- CARGANDO -->
+    <div id="loading" class="spinner">
+      <div style="font-size: 28px; margin-bottom: 8px;">⏳</div>
+      Procesando providencia y consultando base de datos...
+    </div>
+
+    <!-- PANTALLA 2: CONFIRMACIÓN Y EDICIÓN -->
+    <div id="step2" style="display:none;">
+      
+      <div id="seccionCoincidencias" class="card" style="display:none; border-color: var(--warning-border); background-color: var(--warning-bg);">
+        <label style="color: #b45309; margin-top:0;">⚠️ Se detectó este proceso en la base de datos:</label>
+        <div id="listaCoincidencias" style="margin-top: 8px;"></div>
+      </div>
+
+      <div class="card">
+        <label style="margin-top:0;">Materia / Hoja:</label>
+        <select id="materia">
+          <option value="ACTIVOS CIVIL">ACTIVOS CIVIL</option>
+          <option value="ACTIVOS PENAL">ACTIVOS PENAL</option>
+          <option value="I. PENALES">I. PENALES</option>
+          <option value="TRÁMITES">TRÁMITES</option>
+        </select>
+
+        <div class="clearfix" style="margin-top: 10px;">
+          <label style="float: left; margin-top: 4px;">Cliente (Actor):</label>
+          <button type="button" class="btn-swap" onclick="invertirPartes()">⇄ Invertir</button>
+        </div>
+        <div class="combo-wrapper">
+          <input type="text" id="cliente" autocomplete="off" placeholder="Nombre del cliente...">
+          <div id="dropdown_cliente" class="combo-dropdown"></div>
+        </div>
+
+        <label style="margin-top: 10px;">Contraparte (Demandado / Investigado):</label>
+        <div class="combo-wrapper">
+          <input type="text" id="contraparte" autocomplete="off" placeholder="Nombre de contraparte...">
+          <div id="dropdown_contraparte" class="combo-dropdown"></div>
+        </div>
+
+        <label>Número de Proceso:</label>
+        <input type="text" id="numProceso">
+
+        <label>Tipo de Proceso:</label>
+        <input type="text" id="tipoProceso">
+
+        <label>Estado Actual:</label>
+        <textarea id="estado" style="height: 70px;"></textarea>
+
+        <label>Próximas Acciones:</label>
+        <textarea id="proximasAcciones" style="height: 70px;"></textarea>
+
+        <label>Responsable a cargo:</label>
+        <select id="responsable"></select>
+      </div>
+
+      <button type="button" class="btn btn-save" onclick="guardarRegistro()" ontouchstart="">💾 Guardar Expediente</button>
+      <button type="button" class="btn" style="background:#64748b; margin-top: 8px;" onclick="cancelar()">Cancelar</button>
+    </div>
+  </div>
+
+  <script>
+    // Configuración comercial
+    const API_URL = "https://asistente-legal-backend-237k.onrender.com";
+    const ORG_ID = "b47a988d-7123-455b-bfbf-6677942e1234"; // UUID creado en Supabase
+
+    let bancoPartes = [];
+    let expedienteIdExistente = null;
+
+    async function procesarProvidencia() {
+      if (document.activeElement) document.activeElement.blur();
+      const texto = document.getElementById('textoNotificacion').value.trim();
+      if (!texto) return alert("Pega el texto de la providencia.");
+
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+
+      try {
+        const resp = await fetch(`${API_URL}/api/procesar-providencia`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ textoNotificacion: texto, organizacionId: ORG_ID })
+        });
+
+        const data = await resp.json();
+        if (data.error) throw new Error(data.error);
+
+        mostrarFormulario(data);
+      } catch (err) {
+        alert("Error al procesar: " + err.message);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('step1').style.display = 'block';
+      }
+    }
+
+    function mostrarFormulario(data) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('step2').style.display = 'block';
+
+      const d = data.datosIA || {};
+      document.getElementById('materia').value = d.materia || "ACTIVOS CIVIL";
+      document.getElementById('cliente').value = d.cliente || "";
+      document.getElementById('contraparte').value = d.contraparte || "";
+      document.getElementById('numProceso').value = d.numProceso || "";
+      document.getElementById('tipoProceso').value = d.tipoProceso || "";
+      document.getElementById('estado').value = d.estado || "";
+      document.getElementById('proximasAcciones').value = d.proximasAcciones || "";
+
+      // Listas de partes
+      bancoPartes = data.listas?.partes || [];
+      iniciarCombo('cliente', 'dropdown_cliente', bancoPartes);
+      iniciarCombo('contraparte', 'dropdown_contraparte', bancoPartes);
+
+      // Cargar responsables
+      const selectResp = document.getElementById('responsable');
+      selectResp.innerHTML = '';
+      (data.listas?.responsables || []).forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.id;
+        opt.textContent = r.nombre_completo;
+        selectResp.appendChild(opt);
+      });
+
+      // Manejo de coincidencias
+      const divCoincidencias = document.getElementById('seccionCoincidencias');
+      const lista = document.getElementById('listaCoincidencias');
+      lista.innerHTML = '';
+      expedienteIdExistente = null;
+
+      if (data.coincidencias && data.coincidencias.length > 0) {
+        divCoincidencias.style.display = 'block';
+        data.coincidencias.forEach(c => {
+          lista.innerHTML += `
+            <div class="match-card">
+              <input type="radio" name="opcionMatch" id="match_${c.id}" value="${c.id}" checked onclick="expedienteIdExistente='${c.id}'">
+              <label for="match_${c.id}" style="display:inline; cursor:pointer;">
+                <strong>Actualizar existente:</strong> ${c.cliente} vs ${c.contraparte}<br>
+                <small style="color:#64748b;">Nº: ${c.num_proceso} | ${c.materia}</small>
+              </label>
+            </div>
+          `;
+          expedienteIdExistente = c.id;
+        });
+
+        lista.innerHTML += `
+          <div class="match-card" style="background:#fff; border-color:#cbd5e1;">
+            <input type="radio" name="opcionMatch" id="match_nuevo" value="" onclick="expedienteIdExistente=null">
+            <label for="match_nuevo" style="display:inline; cursor:pointer; color: var(--success); font-weight:600;">
+              ➕ Registrar como nuevo expediente independiente
+            </label>
+          </div>
+        `;
+      } else {
+        divCoincidencias.style.display = 'none';
+      }
+    }
+
+    function iniciarCombo(inputId, ddId, opciones) {
+      const input = document.getElementById(inputId);
+      const dd = document.getElementById(ddId);
+      input.oninput = () => {
+        dd.innerHTML = '';
+        const f = input.value.toLowerCase().trim();
+        const filtradas = opciones.filter(o => !f || o.toLowerCase().includes(f));
+        if (filtradas.length > 0) {
+          dd.style.display = 'block';
+          filtradas.slice(0, 15).forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'combo-item';
+            row.textContent = item;
+            row.onclick = () => { input.value = item; dd.style.display = 'none'; };
+            dd.appendChild(row);
+          });
+        } else {
+          dd.style.display = 'none';
+        }
+      };
+    }
+
+    function invertirPartes() {
+      const c = document.getElementById('cliente');
+      const cp = document.getElementById('contraparte');
+      const temp = c.value;
+      c.value = cp.value;
+      cp.value = temp;
+    }
+
+    async function guardarRegistro() {
+      if (document.activeElement) document.activeElement.blur();
+
+      const payload = {
+        expedienteId: expedienteIdExistente,
+        organizacionId: ORG_ID,
+        materia: document.getElementById('materia').value,
+        numProceso: document.getElementById('numProceso').value,
+        cliente: document.getElementById('cliente').value,
+        contraparte: document.getElementById('contraparte').value,
+        tipoProceso: document.getElementById('tipoProceso').value,
+        estado: document.getElementById('estado').value,
+        proximasAcciones: document.getElementById('proximasAcciones').value,
+        responsableId: document.getElementById('responsable').value || null
+      };
+
+      try {
+        const resp = await fetch(`${API_URL}/api/guardar-expediente`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (data.error) throw new Error(data.error);
+
+        alert(data.mensaje || "Guardado exitosamente.");
+        cancelar();
+      } catch (err) {
+        alert("Error al guardar: " + err.message);
+      }
+    }
+
+    function cancelar() {
+      document.getElementById('textoNotificacion').value = '';
+      document.getElementById('step2').style.display = 'none';
+      document.getElementById('step1').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
